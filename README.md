@@ -1,43 +1,52 @@
 
 # Wright’s Carnival Ticket Calculator 🎟️
 
-A mobile-friendly ticket price calculator for use at Wright’s Amusements during the Lea County Fair.
+A mobile-friendly ticket price calculator designed for Wright’s Amusements staff.
 
-## Features
+## 🎯 Features
 
-- ✅ Date-aware ticket options (auto disables invalid day deals)
-- ✅ Manual override toggle to allow exceptions
-- ✅ Tax included (Lea County, NM – 6.875%)
-- ✅ Fast change calculation for cash-only situations
-- ✅ Mobile and offline-friendly
+- 🧾 Accurate tax rates for each confirmed 2025 event location
+- 🗺️ Location-based tax selection (Roswell zones included)
+- ⚠️ Confirmation prompt before applying any tax change
+- 💰 Automatic calculation of totals and change due
+- 📱 Fully offline and mobile-friendly
 
-## How to Use
+## 🗺️ Supported Locations
 
-1. Open [`index.html`](index.html) in any web browser (desktop or phone)
-2. Select quantities for ticket options
-3. Enter the amount of cash received
-4. The total and change due will be calculated instantly
+Includes confirmed 2025 tour stops:
+- College Station, TX
+- Hobbs, NM
+- Aurora, CO
+- Artesia, NM
+- Roswell, NM (Downtown, North, South zones)
+... and more
 
-## Ticket Options
+## 🚨 Roswell Tax Selection
 
-| Ticket Type              | Price  | Availability        |
-|--------------------------|--------|---------------------|
-| Single Tickets           | $1     | Every Day           |
-| Unlimited Ride Armband  | $40    | Wed–Sat (Aug 6–9)   |
-| Thursday Armband (🥫)   | $25    | Thursday (Aug 7)    |
-| Wednesday Family Pack   | $100   | Wednesday (Aug 6)   |
+If working in Roswell, use the dropdown to choose:
+- Downtown, North, or South zones  
+Check the **register’s posted tax rate** to pick the correct option.
 
-> Use the **Override Date Restrictions** checkbox to manually enable any option.
+## 📦 How to Use
 
-## Hosting
+1. Open `index.html` in any web browser
+2. Select your current location from the dropdown
+3. Confirm the tax rate if prompted
+4. Input ticket quantities and cash
+5. View total, tax, and change due
 
-This page is suitable for free deployment via **GitHub Pages**.
+## 🌐 Hosting Instructions (GitHub Pages)
 
-To enable GitHub Pages:
-- Go to your repo Settings → Pages
-- Set source to `main` branch and root folder (`/`)
-- Visit the URL GitHub provides
+1. Create a new GitHub repository
+2. Upload the `index.html` and `README.md` files
+3. Go to **Settings → Pages**
+4. Set source to `main` branch, folder `/ (root)`
+5. GitHub will publish your calculator at:
 
-## License
+```
+https://<your-username>.github.io/<repo-name>/
+```
+
+## 📄 License
 
 MIT License
