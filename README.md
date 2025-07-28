@@ -44,7 +44,7 @@ Check the **register’s posted tax rate** to pick the correct option.
 5. GitHub will publish your calculator at:
 
 ```
-https://<your-username>.github.io/<repo-name>/
+https://BestNameYet.github.io/wrights-carnival-calculator/
 ```
 
 ## 📄 License
