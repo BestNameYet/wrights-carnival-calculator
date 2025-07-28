@@ -1,0 +1,197 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Carnival Calculator Wizard</title>
+<style>
+    body { font-family: sans-serif; margin: 0; padding: 0; background: #fefefe; }
+    .wizard { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; padding: 2em; text-align: center; }
+    .step { display: none; flex-direction: column; align-items: center; width: 100%; }
+    .step.active { display: flex; }
+    .counter { font-size: 2em; margin: 1em 0; }
+    button { padding: 1em 2em; font-size: 1em; margin: 0.5em; border: none; border-radius: 5px; }
+    .nav { margin-top: 2em; }
+    .input-group { display: flex; align-items: center; gap: 1em; }
+    .input-group button { font-size: 2em; width: 2.5em; height: 2.5em; }
+    .highlight { font-weight: bold; font-size: 1.5em; }
+  </style>
+</head>
+<body>
+<div class="wizard" role="main"><div aria-label="Step 6 of 7" class="step" id="step-0">
+<h2>👨‍👩‍👧‍👦 How many Family Packs?</h2>
+<div class="input-group">
+<button onclick="changeCount('familyPacks', -1)">−</button>
+<span class="counter" id="familyPacks">0</span>
+<button onclick="changeCount('familyPacks', 1)">+</button>
+</div>
+</div>
+<div aria-label="Step 1 of 7" class="step active" id="step-1">
+<h2>🎟️ How many Single Tickets?</h2>
+<div class="input-group">
+<button onclick="changeCount('singleTickets', -1)">−</button>
+<span class="counter" id="singleTickets">0</span>
+<button onclick="changeCount('singleTickets', 1)">+</button>
+<button onclick="changeCount('singleTickets', 5)">+5</button><button onclick="changeCount('singleTickets', 10)">+10</button></div>
+</div>
+<div aria-label="Confirm stored location" class="step" id="step-1">
+<h2>📍 Change saved location?</h2>
+<div class="input-group">
+<button onclick="setChangeLocation(true)">Yes</button>
+<button onclick="setChangeLocation(false)">No</button>
+</div>
+</div><div aria-label="Step 2 of 7" class="step" id="step-2">
+<h2>🎡 Unlimited Ride Armbands</h2>
+<div class="input-group">
+<button onclick="changeCount('armbands', -1)">−</button>
+<span class="counter" id="armbands">0</span>
+<button onclick="changeCount('armbands', 1)">+</button>
+
+<button onclick="changeCount('singleTickets', 5)">+5</button>
+<button onclick="changeCount('singleTickets', 10)">+10</button>
+</div>
+</div>
+<div aria-label="Step 3 of 7" class="step" id="step-3">
+<h2>🥫 Discount Armband?</h2>
+<div class="input-group">
+<button onclick="setToggle('discountOffer', true)">Yes</button>
+<button onclick="setToggle('discountOffer', false)">No</button>
+</div>
+</div>
+<div aria-label="Step 4 of 7" class="step" id="step-4">
+<h2>🥫 How many Discount Armbands?</h2>
+<div class="input-group">
+<button onclick="changeCount('discountArmbands', -1)">−</button>
+<span class="counter" id="discountArmbands">0</span>
+<button onclick="changeCount('discountArmbands', 1)">+</button>
+</div>
+</div>
+<div aria-label="Step 5 of 7" class="step" id="step-5">
+<h2>👨‍👩‍👧‍👦 Family Pack?</h2>
+<div class="input-group">
+<button onclick="setToggle('familyOffer', true)">Yes</button>
+<button onclick="setToggle('familyOffer', false)">No</button>
+</div>
+</div>
+
+<div aria-label="Step 7 of 7" class="step" id="step-6">
+<h2>📍 Select Event Location</h2>
+<div>
+<button onclick="selectLocation('College Station, TX', 8.25)">College Station</button>
+<button onclick="selectLocation('Hobbs, NM', 6.875)">Hobbs</button>
+</div>
+<h3 class="highlight" id="locationSummary" style="margin-top:1em;"></h3>
+</div>
+<div class="step" id="step-7">
+<h2>💵 Cash Received</h2>
+<div class="input-group">
+<button onclick="changeCount('cashGiven', -1)">−</button>
+<span class="counter" id="cashGiven">0</span>
+<button onclick="changeCount('cashGiven', 1)">+</button>
+</div>
+</div>
+<div class="nav">
+<button onclick="prevStep()">⬅ Back</button>
+<button onclick="nextStep()">Next ➡</button>
+</div>
+</div>
+<script>
+    function selectLocation(name, rate) {
+      taxRate = rate;
+      document.getElementById("locationSummary").textContent = `${name} (${rate}%)`;
+      localStorage.setItem("savedLocation", JSON.stringify({ name, rate }));
+      nextStep();
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const saved = localStorage.getItem("savedLocation");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        const change = confirm(`Use saved location: ${parsed.name} (${parsed.rate}%)?\nClick Cancel to choose a new one.`);
+        if (change) {
+          taxRate = parsed.rate;
+          document.getElementById("locationSummary").textContent = `${parsed.name} (${parsed.rate}%)`;
+          step = 1;
+        }
+      }
+      updateSteps();
+    });
+
+    let step = 0;
+    let discountOffer = false;
+    let familyOffer = false;
+    let taxRate = 0;
+
+    function updateSteps() {
+      document.querySelectorAll('.step').forEach((el, i) => {
+        el.classList.toggle('active', i === step);
+      });
+    }
+
+    function nextStep() {
+      if (step === 2 && !discountOffer) step = 4;
+      else if (step === 4 && !familyOffer) step = 6;
+      else step++;
+      updateSteps();
+    }
+
+    function prevStep() {
+      if (step === 6 && !familyOffer) step = 4;
+      else if (step === 4 && !discountOffer) step = 2;
+      else step--;
+      updateSteps();
+    }
+
+    function changeCount(id, delta) {
+      const el = document.getElementById(id);
+      let val = parseInt(el.textContent || "0");
+      val = Math.max(0, val + delta);
+      el.textContent = val;
+    }
+
+    function setToggle(field, value) {
+      if (field === "discountOffer") discountOffer = value;
+      if (field === "familyOffer") familyOffer = value;
+      nextStep();
+    }
+
+    function selectLocation(name, rate) {
+      taxRate = rate;
+      document.getElementById("locationSummary").textContent = `${name} (${rate}%)`;
+      nextStep();
+    }
+
+    document.addEventListener("DOMContentLoaded", updateSteps);
+  
+    function setChangeLocation(changeIt) {
+      if (changeIt) {
+        step = 0;
+      } else {
+        const stored = localStorage.getItem("savedTaxRate");
+        if (stored) {
+          taxRate = parseFloat(stored);
+          document.getElementById("locationSummary").textContent = `(Using saved rate ${taxRate}%)`;
+        }
+        step = 2;
+      }
+      updateSteps();
+    }
+
+    function selectLocation(name, rate) {
+      taxRate = rate;
+      localStorage.setItem("savedTaxRate", rate);
+      document.getElementById("locationSummary").textContent = `${name} (${rate}%)`;
+      step++;
+      updateSteps();
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const storedRate = localStorage.getItem("savedTaxRate");
+      if (storedRate) step = 1;
+      updateSteps();
+    });
+</script>
+</body>
+</html>
