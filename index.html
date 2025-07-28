@@ -5,13 +5,58 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Wright’s Carnival Calculator</title>
   <style>
-    body { font-family: sans-serif; margin: 2em; }
-    .section { margin-bottom: 1.5em; }
-    fieldset { margin-top: 1em; }
-    input[type='number'] { width: 60px; }
-    input[disabled] { background-color: #eee; }
-    select { padding: 0.3em; }
-  </style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        margin: 1em;
+        padding: 0;
+        background: #fefefe;
+        font-size: 1rem;
+      }
+      h1, h2, h3 {
+        font-size: 1.2em;
+        margin-top: 1em;
+        margin-bottom: 0.5em;
+      }
+      .section {
+        background: #fff;
+        padding: 1em;
+        border-radius: 0.5em;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        margin-bottom: 1.5em;
+      }
+      label {
+        display: block;
+        margin-bottom: 0.8em;
+        font-weight: 500;
+      }
+      input[type="number"],
+      select {
+        width: 100%;
+        padding: 0.6em;
+        font-size: 1em;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+      button {
+        width: 100%;
+        padding: 1em;
+        font-size: 1em;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 0.4em;
+        margin-top: 1em;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+      #totalOutput {
+        font-size: 1.4em;
+        font-weight: bold;
+        display: inline-block;
+        margin-top: 0.5em;
+      }
+    </style>
 </head>
 <body>
   <h1>🎪 Wright’s Carnival Calculator</h1>
@@ -112,7 +157,46 @@
       const total = subtotal + tax;
 
       document.getElementById("totalOutput").textContent = total.toFixed(2);
+      const cashGiven = parseFloat(document.getElementById("cashGiven").value || 0);
+      const change = cashGiven - total;
+      document.getElementById("changeDue").textContent = change >= 0 ? change.toFixed(2) : "0.00";
+      const breakdownEl = document.getElementById("changeBreakdown");
+      breakdownEl.innerHTML = "";
+      let remaining = Math.max(0, change);
+      const denominations = [
+  { name: "$100", value: 100.0, emoji: "💵" },
+  { name: "$50", value: 50.0, emoji: "💵" },
+  { name: "$20", value: 20.0, emoji: "💵" },
+  { name: "$10", value: 10.0, emoji: "💵" },
+  { name: "$5", value: 5.0, emoji: "💵" },
+  { name: "$1", value: 1.0, emoji: "💵" },
+  { name: "50¢", value: 0.5, emoji: "🪙" },
+  { name: "25¢", value: 0.25, emoji: "🪙" },
+  { name: "10¢", value: 0.1, emoji: "🪙" },
+  { name: "5¢", value: 0.05, emoji: "🪙" },
+  { name: "1¢", value: 0.01, emoji: "🪙" }
+];
+      for (const d of denominations) {
+        const count = Math.floor(remaining / d.value);
+        if (count > 0) {
+          breakdownEl.innerHTML += `<li>${d.emoji} ${count} × ${d.name}</li>`;
+          remaining = (remaining - count * d.value + 0.00001); // rounding fix
+        }
+      }
+
     }
   </script>
+  <div class="section">
+    <h3>💵 Cash Received</h3>
+    <label>Enter Cash Given by Customer ($):
+      <input type="number" id="cashGiven" min="0" step="0.01" placeholder="e.g. 100">
+    </label>
+    <h2>Change Due: $<span id="changeDue">0.00</span></h2>
+  </div>
+  <div class="section">
+    <h3>🪙 Change Breakdown</h3>
+    <ul id="changeBreakdown" style="list-style: none; padding-left: 0;"></ul>
+  </div>
+
 </body>
 </html>
