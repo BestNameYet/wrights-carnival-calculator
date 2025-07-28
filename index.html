@@ -7,43 +7,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body { font-family: Arial; background: #f4f4f4; max-width: 480px; margin: auto; padding: 1em; }
-    h2 { text-align: center; }
-    h3 { margin-top: 1.5em; }
-    label, input { display: block; margin: 0.5em 0; }
-    input[type="number"] { width: 100%; padding: 0.5em; font-size: 1em; }
+    h2, h3 { text-align: center; }
+    label, input, select { display: block; width: 100%; margin-bottom: 0.5em; }
+    input[type="number"], select { padding: 0.5em; font-size: 1em; }
     input:disabled { background-color: #ddd; }
-    button { width: 100%; padding: 1em; background: #007bff; color: white; border: none; border-radius: 5px; font-size: 1em; margin-top: 1em; }
-    #results { background: #fff; padding: 1em; border-radius: 5px; margin-top: 1em; }
+    button { padding: 0.7em; font-size: 1em; width: 100%; margin-top: 1em; background-color: #007bff; color: white; border: none; border-radius: 4px; }
+    #results { background: #fff; padding: 1em; border-radius: 4px; margin-top: 1em; font-weight: bold; }
   </style>
 </head>
 <body>
 
 <h2>Carnival Ticket Calculator</h2>
-
-<!-- Normal Ticket Options -->
-<h3>🎟️ Regular Tickets</h3>
-<label>Single Tickets ($1 each):
-  <input type="number" id="qtyTickets" value="0" min="0">
-</label>
-<label>Unlimited Ride Armbands ($40 each):
-  <input type="number" id="qtyArmband40" value="0" min="0">
-</label>
-
-<!-- Special Offers -->
-<h3>🎁 Special Offers</h3>
-<label><input type="checkbox" id="enableSpecials" onchange="toggleSpecials()" checked> Enable Special Offers</label>
-
-<div id="specialOffers">
-  <label>🥫 Discount Armbands ($25 with canned food donation):
-    <input type="number" id="qtyArmband25" value="0" min="0">
-  </label>
-  <label>👨‍👩‍👧‍👦 Family Pack ($100 for 4 unlimited ride armbands):
-    <input type="number" id="qtyFamilyPack" value="0" min="0">
-  </label>
-</div>
-
-<!-- Cash Given -->
-
 
 <h3>📍 Select Event Location</h3>
 <label>Location:
@@ -76,34 +50,22 @@
   <input type="number" id="taxRate" value="6.875" readonly>
 </label>
 
-<label>Location:
-  <select id="locationSelect" onchange="applyLocationTax()">
-    <option value="">-- Select Location --</option>
-    <option>College Station, TX</option>
-    <option>San Angelo, TX</option>
-    <option>Midland, TX</option>
-    <option>Sweetwater, TX</option>
-    <option>Hobbs, NM</option>
-    <option>Aurora, CO</option>
-    <option>Grand Junction, CO</option>
-    <option>Northglenn, CO</option>
-    <option>Greeley, CO</option>
-    <option>Colorado Springs, CO</option>
-    <option>Parker, CO</option>
-    <option>Monte Vista, CO</option>
-    <option>Carlsbad, NM</option>
-    <option>Artesia, NM</option>
-    <option>Lovington, NM</option>
-    <option>Clovis, NM</option>
-    <option>Odessa, TX</option>
-    <option>Big Springs, TX</option>
-    <option>Roswell - Downtown, NM</option>
-<option>Roswell - North, NM</option>
-<option>Roswell - South, NM</option>
-  </select>
+<h3>🎟️ Regular Tickets</h3>
+<label>Single Tickets ($1 each):
+  <input type="number" id="qtyTickets" value="0" min="0">
 </label>
-<label>Tax Rate (%):
-  <input type="number" id="taxRate" value="6.875" readonly>
+<label>Unlimited Ride Armbands ($40 each):
+  <input type="number" id="qtyArmband40" value="0" min="0">
+</label>
+
+<h3>🎁 Special Offers</h3>
+<label><input type="checkbox" id="toggleArmband25" onchange="toggleSpecial('qtyArmband25', this)"> Enable $25 Discount Armband</label>
+<label>🥫 Discount Armbands ($25 with canned food donation):
+  <input type="number" id="qtyArmband25" value="0" min="0" disabled>
+</label>
+<label><input type="checkbox" id="toggleFamilyPack" onchange="toggleSpecial('qtyFamilyPack', this)"> Enable $100 Family Pack</label>
+<label>👨‍👩‍👧‍👦 Family Pack ($100 for 4 unlimited ride armbands):
+  <input type="number" id="qtyFamilyPack" value="0" min="0" disabled>
 </label>
 
 <h3>💵 Payment</h3>
@@ -116,12 +78,41 @@
 <div id="results"></div>
 
 <script>
-const TAX_RATE = 0.06875;
+const LOCATION_TAX_RATES = {
+  "College Station, TX": 8.25,
+  "San Angelo, TX": 8.25,
+  "Midland, TX": 8.25,
+  "Sweetwater, TX": 8.25,
+  "Hobbs, NM": 6.875,
+  "Aurora, CO": 8.00,
+  "Grand Junction, CO": 7.27,
+  "Northglenn, CO": 8.75,
+  "Greeley, CO": 7.01,
+  "Colorado Springs, CO": 8.20,
+  "Parker, CO": 8.00,
+  "Monte Vista, CO": 7.90,
+  "Carlsbad, NM": 6.5625,
+  "Artesia, NM": 7.65,
+  "Lovington, NM": 6.875,
+  "Clovis, NM": 7.4375,
+  "Odessa, TX": 8.25,
+  "Big Springs, TX": 8.25,
+  "Roswell - Downtown, NM": 7.3125,
+  "Roswell - North, NM": 7.125,
+  "Roswell - South, NM": 7.25
+};
 
-function toggleSpecials() {
-  const enable = document.getElementById("enableSpecials").checked;
-  document.getElementById("qtyArmband25").disabled = !enable;
-  document.getElementById("qtyFamilyPack").disabled = !enable;
+function applyLocationTax() {
+  const location = document.getElementById("locationSelect").value;
+  const rate = LOCATION_TAX_RATES[location];
+  if (!rate) return;
+  const confirmChange = confirm(`⚠️ Set tax rate for: ${location}? This will apply ${rate.toFixed(4)}%.`);
+  if (!confirmChange) return;
+  document.getElementById("taxRate").value = rate.toFixed(4);
+}
+
+function toggleSpecial(inputId, checkbox) {
+  document.getElementById(inputId).disabled = !checkbox.checked;
 }
 
 function calculate() {
@@ -130,14 +121,15 @@ function calculate() {
   const qty25 = parseInt(document.getElementById("qtyArmband25").value) || 0;
   const qtyFamily = parseInt(document.getElementById("qtyFamilyPack").value) || 0;
   const cash = parseFloat(document.getElementById("cashGiven").value) || 0;
+  const rateInput = parseFloat(document.getElementById("taxRate").value) || 6.875;
 
   const subtotal = (qtyTickets * 1.00) + (qty40 * 40) + (qty25 * 25) + (qtyFamily * 100);
-  const tax = subtotal * TAX_RATE;
+  const tax = subtotal * (rateInput / 100);
   const total = subtotal + tax;
   const change = cash - total;
 
   let result = `Subtotal: $${subtotal.toFixed(2)}\n`;
-  result += `Tax (6.875%): $${tax.toFixed(2)}\n`;
+  result += `Tax (${rateInput.toFixed(3)}%): $${tax.toFixed(2)}\n`;
   result += `Total: $${total.toFixed(2)}\n`;
 
   if (change < 0) {
@@ -148,124 +140,6 @@ function calculate() {
 
   document.getElementById("results").innerText = result;
 }
-
-window.onload = toggleSpecials;
-
-<script>
-const LOCATION_TAX_RATES = {
-  "College Station, TX": 8.25,
-  "San Angelo, TX": 8.25,
-  "Midland, TX": 8.25,
-  "Sweetwater, TX": 8.25,
-  "Hobbs, NM": 6.875,
-  "Aurora, CO": 8.00,
-  "Grand Junction, CO": 7.27,
-  "Northglenn, CO": 8.75,
-  "Greeley, CO": 7.01,
-  "Colorado Springs, CO": 8.20,
-  "Parker, CO": 8.00,
-  "Monte Vista, CO": 7.90,
-  "Carlsbad, NM": 6.5625,
-  "Artesia, NM": 7.65,
-  "Lovington, NM": 6.875,
-  "Clovis, NM": 7.4375,
-  "Odessa, TX": 8.25,
-  "Big Springs, TX": 8.25,
-  "Roswell, NM": 7.3125
-};
-
-function applyLocationTax() {
-  const location = document.getElementById("locationSelect").value;
-  const rate = LOCATION_TAX_RATES[location];
-
-  if (!rate) return;
-
-  const confirmChange = confirm(`⚠️ WARNING: Set tax rate for: ${location}? This will apply ${rate.toFixed(4)}% to all sales.`);
-  if (!confirmChange) return;
-
-  document.getElementById("taxRate").value = rate.toFixed(4);
-}
-
-<script>
-const LOCATION_TAX_RATES = {
-  "College Station, TX": 8.25,
-  "San Angelo, TX": 8.25,
-  "Midland, TX": 8.25,
-  "Sweetwater, TX": 8.25,
-  "Hobbs, NM": 6.875,
-  "Aurora, CO": 8.00,
-  "Grand Junction, CO": 7.27,
-  "Northglenn, CO": 8.75,
-  "Greeley, CO": 7.01,
-  "Colorado Springs, CO": 8.20,
-  "Parker, CO": 8.00,
-  "Monte Vista, CO": 7.90,
-  "Carlsbad, NM": 6.5625,
-  "Artesia, NM": 7.65,
-  "Lovington, NM": 6.875,
-  "Clovis, NM": 7.4375,
-  "Odessa, TX": 8.25,
-  "Big Springs, TX": 8.25,
-  "Roswell - Downtown, NM": 7.3125,
-  "Roswell - North, NM": 7.1250,
-  "Roswell - South, NM": 7.2500
-};
-
-function applyLocationTax() {
-  const location = document.getElementById("locationSelect").value;
-  const rate = LOCATION_TAX_RATES[location];
-
-  if (!rate) return;
-
-  const confirmChange = confirm(`⚠️ WARNING: Set tax rate for: ${location}? This will apply ${rate.toFixed(4)}% to all sales.`);
-  if (!confirmChange) return;
-
-  document.getElementById("taxRate").value = rate.toFixed(4);
-}
 </script>
-
-</script>
-
-
-<script>
-const LOCATION_TAX_RATES = {
-  "College Station, TX": 8.25,
-  "San Angelo, TX": 8.25,
-  "Midland, TX": 8.25,
-  "Sweetwater, TX": 8.25,
-  "Hobbs, NM": 6.875,
-  "Aurora, CO": 8.00,
-  "Grand Junction, CO": 7.27,
-  "Northglenn, CO": 8.75,
-  "Greeley, CO": 7.01,
-  "Colorado Springs, CO": 8.20,
-  "Parker, CO": 8.00,
-  "Monte Vista, CO": 7.90,
-  "Carlsbad, NM": 6.5625,
-  "Artesia, NM": 7.65,
-  "Lovington, NM": 6.875,
-  "Clovis, NM": 7.4375,
-  "Odessa, TX": 8.25,
-  "Big Springs, TX": 8.25,
-  "Roswell - Downtown, NM": 7.3125,
-  "Roswell - North, NM": 7.1250,
-  "Roswell - South, NM": 7.2500
-};
-
-function applyLocationTax() {
-  const location = document.getElementById("locationSelect").value;
-  const rate = LOCATION_TAX_RATES[location];
-
-  if (!rate) return;
-
-  const confirmChange = confirm(`⚠️ WARNING: Set tax rate for: ${location}? This will apply ${rate.toFixed(4)}% to all sales.`);
-  if (!confirmChange) return;
-
-  document.getElementById("taxRate").value = rate.toFixed(4);
-}
-</script>
-
-</script>
-
 </body>
 </html>
