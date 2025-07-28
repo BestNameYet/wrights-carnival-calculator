@@ -1,51 +1,51 @@
+# Wright’s Carnival Calculator 🎪
 
-# Wright’s Carnival Ticket Calculator 🎟️
+A mobile-friendly, offline-capable ticket and tax calculator built for Wright’s Amusements’ 2025 carnival tour. Designed to help cashiers quickly compute totals including location-based tax.
 
-A mobile-friendly ticket price calculator designed for Wright’s Amusements staff.
+---
 
-## 🎯 Features
+## 🚀 Features
 
-- 🧾 Accurate tax rates for each confirmed 2025 event location
-- 🗺️ Location-based tax selection (Roswell zones included)
-- ⚠️ Confirmation prompt before applying any tax change
-- 💰 Automatic calculation of totals and change due
-- 📱 Fully offline and mobile-friendly
+- 🎟️ **Standard Tickets**
+  - Single Tickets – $1 each
+  - Unlimited Ride Armbands – $40 each
 
-## 🗺️ Supported Locations
+- 🧾 **Special Offers** (enabled manually)
+  - 🥫 Discount Armbands – $25 (only with food donation)
+  - 👨‍👩‍👧‍👦 Family Pack – $100 (includes 4 armbands)
 
-Includes confirmed 2025 tour stops:
-- College Station, TX
-- Hobbs, NM
-- Aurora, CO
-- Artesia, NM
-- Roswell, NM (Downtown, North, South zones)
-... and more
+- 📍 **Location-Based Tax Calculation**
+  - Choose from a dropdown of carnival locations
+  - Confirmation popup locks in the tax rate
+  - Supports NM, TX, and CO events
 
-## 🚨 Roswell Tax Selection
+- ✅ Simple UI, responsive, works offline
 
-If working in Roswell, use the dropdown to choose:
-- Downtown, North, or South zones  
-Check the **register’s posted tax rate** to pick the correct option.
+---
 
-## 📦 How to Use
+## 📂 How to Use
 
-1. Open `index.html` in any web browser
-2. Select your current location from the dropdown
-3. Confirm the tax rate if prompted
-4. Input ticket quantities and cash
-5. View total, tax, and change due
+1. Clone or download the repo.
+2. Open `index.html` in any modern browser.
+3. Enter ticket counts and select the tax location.
+4. Click “Calculate Total” to view results.
 
-## 🌐 Hosting Instructions (GitHub Pages)
+---
 
-1. Create a new GitHub repository
-2. Upload the `index.html` and `README.md` files
-3. Go to **Settings → Pages**
-4. Set source to `main` branch, folder `/ (root)`
-5. GitHub will publish your calculator at:
+## 🌐 Live Demo
 
-```
-https://BestNameYet.github.io/wrights-carnival-calculator/
-```
+Hosted on GitHub Pages:  
+👉 [https://bestnameyet.github.io/carnival-calculator](https://bestnameyet.github.io/carnival-calculator)
+
+---
+
+## 🛠️ Technologies Used
+
+- HTML5 + CSS3
+- Vanilla JavaScript
+- No dependencies, fully static
+
+---
 
 ## 📄 License
 
